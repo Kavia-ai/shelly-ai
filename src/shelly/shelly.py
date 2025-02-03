@@ -14,8 +14,8 @@ import termios
 import tty
 from collections import deque
 
-from llm_parser import LLMParser
-from web_socket_error_message_sink import HTTPErrorMessageSink
+from .llm_parser import LLMParser
+from .web_socket_error_message_sink import HTTPErrorMessageSink
 
 DEBUG = True
 
@@ -236,7 +236,12 @@ def main():
                                 if old_settings:
                                     termios.tcsetattr(sys.stdin.fileno(), termios.TCSADRAIN, old_settings)
 
+                                sys.stdout.write('\r⌛ ')
+                                sys.stdout.flush()
                                 analyze_error(sink, parser, cmd_logger)
+                                sys.stdout.write('\r \r')
+                                sys.stdout.flush()
+
                                 if os.isatty(sys.stdin.fileno()):
                                     tty.setraw(sys.stdin.fileno())
                                 continue

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import json
+import os
 from typing import Dict
 from litellm import acompletion
 
@@ -7,6 +8,11 @@ from litellm import acompletion
 class LLMParser:
     def __init__(self, model="gpt-4o-mini"):
         self.model = model
+        # Use SHELLY_AI_KEY as litellm API key
+        if os.getenv("SHELLY_AI_KEY"):
+            self.api_key = os.getenv("SHELLY_AI_KEY")
+        else:
+            self.api_key = os.getenv("OPENAI_API_KEY")
 
     async def analyze_error(self, cmd_history: Dict) -> Dict:
         """
@@ -120,6 +126,7 @@ If the output follows normal formatting and doesn't contain explicit error messa
                     "content": prompt
                 }],
                 response_format={"type": "json_object"},
+                api_key=self.api_key
             )
 
             analysis = json.loads(response.choices[0].message.content)
